@@ -5,6 +5,8 @@ module Dotenv
     attr_reader :filename
 
     def initialize(filename)
+      super
+      self.default_proc = lambda { |_, k| abort "WHEEEEE" ; ENV[k] }
       @filename = filename
       load
     end
@@ -23,6 +25,12 @@ module Dotenv
 
     def apply!
       each { |k, v| ENV[k] = v }
+    end
+
+    def fetch(*args, &block)
+      super(*args, &block)
+    rescue KeyError
+      ENV[args.first]
     end
   end
 end
